@@ -3,3 +3,4 @@ __pycache__/
 results.csv
 results.png
 stock_analysis.ipynb
+user_settings.yaml
