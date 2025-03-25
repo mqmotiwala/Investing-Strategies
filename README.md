@@ -47,16 +47,20 @@ Fields align with information typically found in E-Trade grant documentation.
   > Used together with `vest_qty` to estimate the sell-to-cover withholding rate.
 
 - **vest_plan** *(structure)*:  
-  Defines the quarterly vesting schedule percentages for each year (`y0` to `y4`):
+  Defines the vesting schedule percentages for each year; `y0` upto the final year for full vest (`y4` for a 4 year vesting period):
 
   ```yaml
   vest_plan:
     y0: [a, b, c, d]  # Grant year (matches grant_month calendar year)
     y1: [e, f, g, h]  # Year after grant year
-    # ... up to y4
+    # ... up to final year
   ```
   
-  Each list `[a, b, c, d]` represents percentages vesting on the four quarterly vest dates of the specified year, as per the defined `VEST_SCHEDULE`.
+  Each list `[a, b, c, d]` represents percentages vesting on the vest dates of the specified year, as per the defined `VEST_SCHEDULE`.
+  The following input validation on grant data exists:  
+  - vest percentages add up to 100% over the course of the vest plan
+  - the number of vests each year match the defined `VEST_SCHEDULE`
+    use 0% vests to pad as necessary for cliffs
 
 ---
 
