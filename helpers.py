@@ -1,4 +1,3 @@
-import math
 import datetime
 import pandas as pd
 import yfinance as yf
@@ -7,6 +6,7 @@ from datetime import datetime as dt
 from datetime import timedelta as td
 from tabulate import tabulate
 import yaml
+from grant import Grant
 
 # access User Settings
 USER_SETTINGS_FILE = 'user_settings.yaml'
@@ -36,17 +36,6 @@ MARKET_SHARES_CASH_CUMSUM_COL_NAME = f"Total {us.MARKET} Shares (Cash)"
 STOCK_PORTFOLIO_COL_NAME = f"{us.STOCK} Portfolio Value"
 MARKET_PORTFOLIO_RSU_COL_NAME = f"{us.MARKET} Portfolio Value (RSUs)"
 MARKET_PORTFOLIO_CASH_COL_NAME = f"{us.MARKET} Portfolio Value (Cash)"
-
-def grant_input_validation(grant):
-    total_vesting = 0
-    for year, vests in grant["vest_plan"].items():
-        if len(vests) != len(us.VEST_SCHEDULE):
-            raise ValueError(f"Vest plan for {grant['grant_reason']} grant must have {len(us.VEST_SCHEDULE)} vesting fractions")
-        
-        total_vesting += sum(vests)
-
-    if total_vesting != 1:
-        raise ValueError(f"Vest proportions for {grant['grant_reason']} grant must sum to 100%")
 
 def is_vest_date(query_date):
     """
@@ -85,31 +74,24 @@ def calculate_vested_amount(query_date, assumeCashReward=False):
 
     total_vested = 0
     for grant in us.grants:
-        # sanity check user input
-        grant_input_validation(grant)
+        g = Grant(grant)
 
-        grant_date = dt.strptime(grant["grant_date"], "%m/%d/%Y").date()
-        grant_qty = get_grant_qty(grant)
-        grant_value = grant["grant_value"]
-        vest_plan = grant["vest_plan"]
-        vest_rate = grant["sellable_qty"]/grant["vest_qty"] # this is used to estimate the witholding rate for taxes
-
-        for year_key, fractions in vest_plan.items():
+        for year_key, fractions in g.vest_plan.items():
             year_offset = int(year_key[1:])  # y0 => 0, y1 => 1, etc.
-            vest_year = grant_date.year + year_offset
+            vest_year = g.grant_date.year + year_offset
 
             for i, fraction in enumerate(fractions):
                 vest_month, vest_day = us.VEST_SCHEDULE[i % 4]
                 vest_date = datetime.date(vest_year, vest_month, vest_day)
 
                 # Handle cases where vest_date is before the grant_date
-                if vest_date < grant_date:
+                if vest_date < g.grant_date:
                     continue
 
                 # sum fractions only if vesting occurrs prior WORK_END_DATE
                 # since vesting cant occur after employment ends
                 if vest_date == query_date and (us.WORK_END_DATE is None or vest_date <= dt.strptime(us.WORK_END_DATE, "%m/%d/%Y").date()):
-                    total_vested += fraction * vest_rate * (grant_value if assumeCashReward else grant_qty)
+                    total_vested += fraction * g.vest_rate * (g.grant_value if assumeCashReward else g.grant_qty)
 
     return total_vested
 
@@ -141,30 +123,6 @@ def get_ticker_prices(ticker):
     hist.rename(columns={us.DESIRED_TICKER_ATTRIBUTE: ticker}, inplace=True)
 
     return hist
-
-def get_grant_qty(grant):
-    """
-    Calculates grant_qty based on grant_value and average close price for grant month
-    """
-
-    grant_date = dt.strptime(grant["grant_date"], "%m/%d/%Y")
-    start_date = datetime.date(grant_date.year, grant_date.month, 1)
-
-    # end_date is set to the first date of the subsequent month
-    # this ensures the Close price of the last day of the month is included
-    end_date = datetime.date(
-        grant_date.year + 1 if grant_date.month == 12 else grant_date.year, # handles year if year rollover 
-        1 if grant_date.month == 12 else grant_date.month + 1,              # handles month year rollover
-        1)                                                                  # first day of the month
-
-    stock = yf.Ticker(us.STOCK).history(
-        start=start_date, 
-        end=end_date) \
-        .reset_index()
-    
-    avg_close = stock["Close"].mean()
-    
-    return math.ceil(grant["grant_value"]/avg_close)
 
 def generate_results():
     # generate a df with all dates since ANALYSIS_START_DATE
