@@ -12,31 +12,7 @@ VEST_SCHEDULE:
   - [9, 5]
   - [12, 5]
 
-# Grants are defined below.
-# Each field aligns with information typically found in E-Trade grant documentation.
-
-# Field descriptions:
-# - grant_reason:   Optional field for user reference (e.g., "new hire", "promotion").
-#
-# - grant_value:    Total dollar value of the grant
-# - grant_date:     The calendar month used to calculate RSUs (based on average close).
-#                      Note: This is often different from the actual grant_date listed on E-Trade.
-#       These two are used to estimate RSUs as:
-#           RSUs = grant_value / average closing price of the grant_month.
-
-# - vest_qty:        Total number of RSUs that have vested.
-# - sellable_qty:    Total number of RSUs available for sale post-withholding.
-#       
-#       These two are used to estimate the sell-to-cover withholding rate
-
-# - vest_plan: Defines what proportion of the grant vests each year.
-#              Each year (y0 to y4) is represented as a list of 4 values,
-#              corresponding to the 4 vesting dates per year as defined in VEST_SCHEDULE.
-#                 i.e., for a given year's vest plan being [a, b, c, d]; 
-#                       a refers to the amount vesting on the first vest date of the year and so on.
-#     - y0:  The calendar year of the grant_month.
-#     - y1–y4: Subsequent years, relative to y0.
-
+# see ReadMe for grant configuration documentation
 grants:
   - grant_reason: "Example Grant"
     grant_value: 100000
