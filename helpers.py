@@ -170,7 +170,7 @@ def plot_results(res):
     MARKET_PORTFOLIO_RSU_LABEL = 'Divest Strategy'
     MARKET_PORTFOLIO_CASH_LABEL = 'Cash Strategy'
 
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(12, 8))
     plt.plot(res['Date'], res[STOCK_PORTFOLIO_COL_NAME], label=STOCK_PORTFOLIO_LABEL)
     plt.plot(res['Date'], res[MARKET_PORTFOLIO_RSU_COL_NAME], label=MARKET_PORTFOLIO_RSU_LABEL)
     plt.plot(res['Date'], res[MARKET_PORTFOLIO_CASH_COL_NAME], label=MARKET_PORTFOLIO_CASH_LABEL)
@@ -195,10 +195,10 @@ def plot_results(res):
     Assumes grants are accepted as cash vs. RSUs; cash vests are immediately invested into \\${us.MARKET}.
     """
 
-    plt.figtext(0.15, -0.1, header_text, ha='right', fontsize=10, style='oblique')
-    plt.figtext(0.155, -0.1, annotation_text, ha='left', fontsize=10)
+    plt.tight_layout(rect=[0, 0.075, 1, 1]) # extra bottom space for annotations
 
-    plt.tight_layout()
+    plt.figtext(0.15, 0, header_text, ha='right', fontsize=10, style='oblique')
+    plt.figtext(0.155, 0, annotation_text, ha='left', fontsize=10)
     
     try:
         file_path = 'results.png'
