@@ -1,0 +1,51 @@
+STOCK: "TSLA"  # RSUs ticker
+MARKET: "VTI"  # ticker for broad market comparison
+DESIRED_TICKER_ATTRIBUTE: "Close"  # for real-time price updates, set this to Close
+
+ANALYSIS_START_DATE: "08/17/2022"  # how far back to look for historical data; must be prior to the first vest for full accuracy 
+WORK_END_DATE: "02/14/2025"        # used to set threshold for when vesting stops, set to None if NA
+
+# month, date of the year on which vesting occurs
+VEST_SCHEDULE:
+  - [3, 5]
+  - [6, 5]
+  - [9, 5]
+  - [12, 5]
+
+# Grants are defined below.
+# Each field aligns with information typically found in E-Trade grant documentation.
+
+# Field descriptions:
+# - grant_reason:   Optional field for user reference (e.g., "new hire", "promotion").
+#
+# - grant_value:    Total dollar value of the grant
+# - grant_date:     The calendar month used to calculate RSUs (based on average close).
+#                      Note: This is often different from the actual grant_date listed on E-Trade.
+#       These two are used to estimate RSUs as:
+#           RSUs = grant_value / average closing price of the grant_month.
+
+# - vest_qty:        Total number of RSUs that have vested.
+# - sellable_qty:    Total number of RSUs available for sale post-withholding.
+#       
+#       These two are used to estimate the sell-to-cover withholding rate
+
+# - vest_plan: Defines what proportion of the grant vests each year.
+#              Each year (y0 to y4) is represented as a list of 4 values,
+#              corresponding to the 4 vesting dates per year as defined in VEST_SCHEDULE.
+#                 i.e., for a given year's vest plan being [a, b, c, d]; 
+#                       a refers to the amount vesting on the first vest date of the year and so on.
+#     - y0:  The calendar year of the grant_month.
+#     - y1–y4: Subsequent years, relative to y0.
+
+grants:
+  - grant_reason: "Example Grant"
+    grant_value: 100000
+    grant_date: "01/01/2024"
+    vest_qty: 1000
+    sellable_qty: 600
+    vest_plan:
+      y0: [0, 0, 0, 0]
+      y1: [0.25, 0.0625, 0.0625, 0.0625]
+      y2: [0.0625, 0.0625, 0.0625, 0.0625]
+      y3: [0.0625, 0.0625, 0.0625, 0.0625]
+      y4: [0.0625, 0, 0, 0]
