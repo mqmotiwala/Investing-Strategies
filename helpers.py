@@ -5,21 +5,10 @@ import matplotlib.pyplot as plt
 from datetime import datetime as dt
 from datetime import timedelta as td
 from tabulate import tabulate
-import yaml
 from grant import Grant
+from config import UserSettings
 
-# access User Settings
-USER_SETTINGS_FILE = 'user_settings.yaml'
-
-class UserSettings:
-    def __init__(self, yaml_path: str):
-        with open(yaml_path, 'r') as f:
-            self._data = yaml.safe_load(f)
-
-    def __getattr__(self, name):
-        return self._data.get(name)
-
-us = UserSettings(USER_SETTINGS_FILE)
+us = UserSettings()
 
 # define col names
 VEST_COL_NAME = f"{us.STOCK} Vested"

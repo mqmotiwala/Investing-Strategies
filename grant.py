@@ -1,21 +1,10 @@
-import yaml 
 import math
 import datetime
 from datetime import datetime as dt
 import yfinance as yf
+from config import UserSettings
 
-# access User Settings
-USER_SETTINGS_FILE = 'user_settings.yaml'
-
-class UserSettings:
-    def __init__(self, yaml_path: str):
-        with open(yaml_path, 'r') as f:
-            self._data = yaml.safe_load(f)
-
-    def __getattr__(self, name):
-        return self._data.get(name)
-
-us = UserSettings(USER_SETTINGS_FILE)
+us = UserSettings()
 
 class Grant:
     def __init__(self, grant_attrs):
