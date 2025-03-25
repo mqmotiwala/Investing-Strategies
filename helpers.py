@@ -275,8 +275,8 @@ def get_summary_table(res):
     # Prepare data for tabulation
     data = [
         ["Hold Strategy", f"${hold_strategy:,.2f}", "-"],
-        ["Divest Strategy", f"${divest_strategy:,.2f}", f"${divest_diff:,.2f}"],
-        ["Cash Strategy", f"${cash_strategy:,.2f}", f"${cash_diff:,.2f}"]
+        ["Divest Strategy", f"${divest_strategy:,.2f}", f"{"-" if divest_diff < 0 else ''}${abs(divest_diff):,.2f}"],
+        ["Cash Strategy", f"${cash_strategy:,.2f}", f"{"-" if cash_diff < 0 else ''}${abs(cash_diff):,.2f}"]
     ]
 
     # Print formatted table
