@@ -40,6 +40,9 @@ MARKET_PORTFOLIO_CASH_COL_NAME = f"{us.MARKET} Portfolio Value (Cash)"
 def grant_input_validation(grant):
     total_vesting = 0
     for year, vests in grant["vest_plan"].items():
+        if len(vests) != len(us.VEST_SCHEDULE):
+            raise ValueError(f"Vest plan for {grant['grant_reason']} grant must have {len(us.VEST_SCHEDULE)} vesting fractions")
+        
         total_vesting += sum(vests)
 
     if total_vesting != 1:
