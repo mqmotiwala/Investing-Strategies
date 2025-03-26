@@ -15,13 +15,39 @@ A tool to evaluate the performance of different strategies (Hold, Divest, Cash) 
 
 ## Setup & Configuration
 
-**1. Configure Settings and Grants:**
-
 All settings are managed in `user_settings.yaml`.  
-Grant specifications are handled as such:  
+
+### Global Settings
+These settings apply to the analysis engine and data pull behavior:
+
+- `STOCK`: The RSU stock ticker (e.g., `TSLA`)
+- `MARKET`: The comparison market index ticker (e.g., `VTI`)
+- `DESIRED_TICKER_ATTRIBUTE`: Usually `Close`, defines which price attribute is used for historical data
+- `ANALYSIS_START_DATE`: Historical analysis window start date (in `YYYY-MM-DD`). Must be prior to first vest for full accuracy.
+- `WORK_END_DATE`: Last date for vesting eligibility, if applicable. Set as `None` otherwise.
+
+--- 
+
+### Vest Schedule
+`VEST_SCHEDULE` defines the [Month, Date] on which vesting may occur in any year.
+
+```yaml
+VEST_SCHEDULE:
+  - [3, 5]
+  - [6, 5]
+  - [9, 5]
+  - [12, 5]
+```
+
+---
 
 ### Grant Definitions  
-Fields align with information typically found in E-Trade grant documentation.
+Fields align with information typically found in E-Trade grant documentation.  
+You may define vesting logic in one of two ways:
+- By explicitly specifying a `vest_plan`, or
+- By supplying a simplified `vest_model`, which will auto-generate the full vest_plan.
+
+Only one of these two (`vest_plan` or `vest_model`) should be defined per grant.
 
 #### Field Descriptions:
 
@@ -31,7 +57,7 @@ Fields align with information typically found in E-Trade grant documentation.
 - **grant_value** *(numeric)*:  
   Total dollar amount of the grant.
 
-- **grant_date** *(MM/DD/YYYY)*:  
+- **grant_date** *(YYYY-MM-DD)*:  
   Date for the calendar month used to calculate RSU quantity based on the average closing stock price.  
   **Note**: Usually differs from the actual `grant_date` in E-Trade documentation.
 
@@ -46,37 +72,42 @@ Fields align with information typically found in E-Trade grant documentation.
 
   > Used together with `vest_qty` to estimate the sell-to-cover withholding rate.
 
-- **vest_plan** *(structure)*:  
-  Defines the vesting schedule percentages for each year; `y0` upto the final year for full vest (`y4` for a 4 year vesting period):
+---
 
-  ```yaml
-  vest_plan:
-    y0: [a, b, c, d]  # Grant year (matches grant_month calendar year)
-    y1: [e, f, g, h]  # Year after grant year
-    # ... up to final year
-  ```
-  
-  Each list `[a, b, c, d]` represents percentages vesting on the vest dates of the specified year, as per the defined `VEST_SCHEDULE`.
-  The following input validation on grant data exists:  
-  - vest percentages add up to 100% over the course of the vest plan
-  - the number of vests each year match the defined `VEST_SCHEDULE`
-    use 0% vests to pad as necessary for cliffs
+#### Option 1: **Manual `vest_plan`**
+
+```yaml
+vest_plan:
+  y0: [0, 0, 0, 0]
+  y1: [0.25, 0.0625, 0.0625, 0.0625]
+  y2: [0.0625, 0.0625, 0.0625, 0.0625]
+  y3: [0.0625, 0.0625, 0.0625, 0.0625]
+  y4: [0.0625, 0, 0, 0]
+```
+
+Each key `y0`, `y1`, ..., represents a year of vesting relative to the grant date year.  
+Each value is a list of percentages for each defined vest date in the year (based on `VEST_SCHEDULE`).
+
+##### Validation Rules:
+- Percentages must sum to exactly `1.0` across all years.
+- Each year must contain as many entries as `VEST_SCHEDULE`. Use `0` values to pad as needed (e.g., for cliffs).
 
 ---
 
-**Example:**
+#### Option 2: **Auto-generated `vest_plan` via `vest_model`**
 
 ```yaml
-grants:
-  - grant_reason: "Example Grant"
-    grant_value: 100000
-    grant_date: "01/01/2024"
-    vest_qty: 1000
-    sellable_qty: 600
-    vest_plan:
-      y0: [0, 0, 0, 0]
-      y1: [0.25, 0.0625, 0.0625, 0.0625]
-      y2: [0.0625, 0.0625, 0.0625, 0.0625]
-      y3: [0.0625, 0.0625, 0.0625, 0.0625]
-      y4: [0.0625, 0, 0, 0]
+vest_model:
+  duration_years: 4
+  cliff_skipped_vests: 1
+  cliff_vest_qty: 0.25
 ```
+
+When `vest_model` is supplied, the tool will automatically generate a `vest_plan` according to the following:
+
+- **`duration_years`**: Total number of years the grant vests over.
+- **`cliff_skipped_vests`** *(optional)*: Number of vest dates (from `VEST_SCHEDULE`) intentionally skipped due to a cliff.
+- **`cliff_vest_qty`** *(optional)*: Proportion of the total RSUs that vests immediately after the cliff period.
+- Any vesting dates in year 0 that occur before the `grant_date` are automatically excluded.
+
+The remainder of the grant is evenly divided across the remaining vest events.
