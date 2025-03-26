@@ -1,6 +1,7 @@
 # Investing Strategies
 
 A tool to evaluate the performance of different strategies (Hold, Divest, Cash) for employee RSU grants.
+![results](https://github.com/user-attachments/assets/4c2cf9ba-eec3-40f3-a707-0154ca39a0b9)
 
 ## Strategies Explained
 
