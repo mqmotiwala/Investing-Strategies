@@ -11,13 +11,18 @@ class Grant:
         for key, value in grant_attrs.items():
             setattr(self, key, value)
         
-        self._input_validation()        
-        self._create_vest_plan()
+        self._input_validation()
         self._calculate_grant_qty()
         
+        if hasattr(self, "vest_model"):
+            self._create_vest_plan()
+
         self.vest_rate = self.sellable_qty/self.vest_qty # this is used to estimate the witholding rate for taxes
 
     def _input_validation(self):
+        if not hasattr(self, "vest_plan") and not hasattr(self, "vest_model"):
+            raise ValueError(f"{self.grant_reason} grant does not define vesting logic.")
+
         try:
             self.grant_date = dt.strptime(self.grant_date, "%Y-%m-%d").date()
         except ValueError:
@@ -33,6 +38,19 @@ class Grant:
         cliff_vest_qty = self.vest_model.get("cliff_vest_qty", 0)
         if not (0 <= cliff_vest_qty <= 1):
             raise ValueError("cliff_vest_qty must be between 0 and 1")
+        
+        # if no vest_model, vest_plan has been manually supplied
+        # do specific input validation for this case
+        if not hasattr(self, "vest_model") and hasattr(self, "vest_plan"): 
+            total_vesting = 0
+            for year, vests in self.vest_plan.items():
+                if len(vests) != len(us.VEST_SCHEDULE):
+                    raise ValueError(f"Vest plan for {self.grant_reason} grant must have {len(us.VEST_SCHEDULE)} vesting fractions")
+                
+                total_vesting += sum(vests)
+
+            if total_vesting != 1:
+                raise ValueError(f"Vest proportions for {self.grant_reason} grant must sum to 100%")
 
     def _calculate_grant_qty(self):
         """
