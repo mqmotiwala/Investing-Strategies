@@ -1,6 +1,6 @@
 # Investing Strategies
 
-A tool to evaluate the performance of different strategies (Hold, Divest, Cash) for employee RSU (Restricted Stock Unit) grants.
+A tool to evaluate the performance of different strategies (Hold, Divest, Cash) for employee RSU grants.
 
 ## Strategies Explained
 
