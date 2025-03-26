@@ -39,12 +39,8 @@ VEST_SCHEDULE:
 ---
 
 ### Grant Definitions  
+Each grant needs the following non-optional fields.  
 Fields align with information typically found in E-Trade grant documentation.  
-You may define vesting logic in one of two ways:
-- By explicitly specifying a `vest_plan`, or
-- By supplying a simplified `vest_model`, which will auto-generate the full vest_plan.
-
-Only one of these two (`vest_plan` or `vest_model`) should be defined per grant.
 
 #### Field Descriptions:
 
@@ -69,7 +65,34 @@ Only one of these two (`vest_plan` or `vest_model`) should be defined per grant.
 
   > Used together with `vest_qty` to estimate the sell-to-cover withholding rate.
 
-#### Option 1: Manual `vest_plan`
+#### Vesting Logic 
+Each grant must also specify the vesting logic in one of two ways:
+- By explicitly specifying a `vest_plan`, or
+- By supplying a simplified `vest_model`, which will auto-generate the full vest_plan.
+
+Only one of these two (`vest_plan` or `vest_model`) should be defined per grant.
+
+##### Option 1: Auto-generate `vest_plan` via `vest_model`
+
+```yaml
+vest_model:
+  duration_years: 4
+  cliff_skipped_vests: 1
+  cliff_vest_qty: 0.25
+```
+
+When `vest_model` is supplied, the tool will automatically generate a `vest_plan` according to the following:
+
+- `duration_years`: Total number of years the grant vests over.
+- `cliff_skipped_vests` *(optional)*: Number of vest dates (from `VEST_SCHEDULE`) intentionally skipped due to a cliff.  
+For example, a 1 year cliff for grants that typically vest quarterly would have 4 skipped vest dates.
+- `cliff_vest_qty` *(optional)*: Proportion of the total RSUs that vests immediately after the cliff period.
+
+The remainder of the grant is evenly divided across the remaining vest events.
+
+##### Option 2: Manual `vest_plan`
+
+If more control over vesting logic is desired, you can manually specify `vest_plan` like this:
 
 ```yaml
 vest_plan:
@@ -87,27 +110,22 @@ Each value is a list of percentages for each defined vest date in the year (base
 
 ---
 
-#### Option 2: Auto-generated `vest_plan` via `vest_model`
+#### Example: Grant definition using auto-generated `vest_plan` via `vest_model`
 
 ```yaml
-vest_model:
-  duration_years: 4
-  cliff_skipped_vests: 1
-  cliff_vest_qty: 0.25
+grants:
+  - grant_reason: "New Hire Grant"
+    grant_value: 80000
+    grant_date: "2023-06-19"
+    vest_qty: 120
+    sellable_qty: 72
+    vest_model:
+      duration_years: 4
+      cliff_skipped_vests: 1
+      cliff_vest_qty: 0.25
 ```
 
-When `vest_model` is supplied, the tool will automatically generate a `vest_plan` according to the following:
-
-- `duration_years`: Total number of years the grant vests over.
-- `cliff_skipped_vests` *(optional)*: Number of vest dates (from `VEST_SCHEDULE`) intentionally skipped due to a cliff.
-- `cliff_vest_qty` *(optional)*: Proportion of the total RSUs that vests immediately after the cliff period.
-- Any vesting dates in year 0 that occur before the `grant_date` are automatically excluded.
-
-The remainder of the grant is evenly divided across the remaining vest events.
-
----
-
-#### Example: Manual `vest_plan`
+#### Example: Grant definition via manually defined `vest_plan`
 
 ```yaml
 grants:
@@ -122,19 +140,4 @@ grants:
       y2: [0.0625, 0.0625, 0.0625, 0.0625]
       y3: [0.0625, 0.0625, 0.0625, 0.0625]
       y4: [0.0625, 0, 0, 0]
-```
-
-#### Example: Auto-generated via `vest_model`
-
-```yaml
-grants:
-  - grant_reason: "New Hire Grant"
-    grant_value: 80000
-    grant_date: "2023-06-19"
-    vest_qty: 120
-    sellable_qty: 72
-    vest_model:
-      duration_years: 4
-      cliff_skipped_vests: 1
-      cliff_vest_qty: 0.25
 ```
