@@ -17,6 +17,7 @@ class Grant:
         if hasattr(self, "vest_model"):
             self._create_vest_plan()
 
+        self.first_vest_date = self._set_first_vest_date()
         self.vest_rate = self.sellable_qty/self.vest_qty # this is used to estimate the witholding rate for taxes
 
     def _input_validation(self):
@@ -115,4 +116,10 @@ class Grant:
         for i in range(math.ceil(len(vest_qtys)/vests_per_year)):
             start = i * vests_per_year
             end = start + vests_per_year
-            self.vest_plan[f"y{i}"] = vest_qtys[start:end]
+            self.vest_plan[self.grant_date.year + i] = vest_qtys[start:end]
+
+    def _set_first_vest_date(self):
+        for vest_year, vest_qtys in sorted(self.vest_plan.items()):
+            for i, vest_qty in enumerate(vest_qtys):
+                if vest_qty > 0:
+                    return datetime.date(vest_year, us.VEST_SCHEDULE[i][0], us.VEST_SCHEDULE[i][1])

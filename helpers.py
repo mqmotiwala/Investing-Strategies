@@ -11,6 +11,12 @@ from config import UserSettings
 us = UserSettings()
 DESIRED_TICKER_ATTRIBUTE = "Close"
 
+# define ANALYSIS_START_DATE dynamically based on grant vesting logic
+NUM_DAYS_PRECEDING_ANALYSIS = 30
+ANALYSIS_START_DATE = min(
+        [Grant(grant).first_vest_date for grant in us.grants]
+    ) - td(days=NUM_DAYS_PRECEDING_ANALYSIS)
+
 # define col names
 VEST_COL_NAME = f"{us.STOCK} Vested"
 CASH_VEST_COL_NAME = f"Cash Vested"
@@ -66,10 +72,7 @@ def calculate_vested_amount(query_date, assumeCashReward=False):
     for grant in us.grants:
         g = Grant(grant)
 
-        for year_key, fractions in g.vest_plan.items():
-            year_offset = int(year_key[1:])  # y0 => 0, y1 => 1, etc.
-            vest_year = g.grant_date.year + year_offset
-
+        for vest_year, fractions in g.vest_plan.items():
             for i, fraction in enumerate(fractions):
                 vest_month, vest_day = us.VEST_SCHEDULE[i % 4]
                 vest_date = datetime.date(vest_year, vest_month, vest_day)
@@ -101,12 +104,12 @@ def get_ticker_prices(ticker):
     # yfinance does not include end date in the date range, 
     # so by setting end date to tomorrow's date, you include current date price data
     hist = yf.Ticker(ticker).history(
-        start=us.ANALYSIS_START_DATE, 
+        start=ANALYSIS_START_DATE, 
         end=dt.now().date() + td(days=1)) \
         .reset_index() # sets index to a Date col 
         
     if hist.empty:
-        raise ValueError(f"No data found for {ticker} since {us.ANALYSIS_START_DATE}.")
+        raise ValueError(f"No data found for {ticker} since {ANALYSIS_START_DATE}.")
 
     # stock.history() returns Date values as Timestamp object
     # convert to date Object for consistency
@@ -123,7 +126,7 @@ def get_ticker_prices(ticker):
 def generate_results():
     # generate a df with all dates since ANALYSIS_START_DATE
     date_range = pd.date_range(
-        start=us.ANALYSIS_START_DATE, 
+        start=ANALYSIS_START_DATE, 
         end=dt.now().date(),
         freq="D") \
         .date
