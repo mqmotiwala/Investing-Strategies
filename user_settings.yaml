@@ -3,7 +3,6 @@
 # global settings
 STOCK: "TSLA"
 MARKET: "VTI"
-ANALYSIS_START_DATE: "2022-08-27"
 WORK_END_DATE: "2025-02-14"
 
 # vest schedule 

@@ -101,7 +101,7 @@ def get_ticker_prices(ticker):
     # yfinance does not include end date in the date range, 
     # so by setting end date to tomorrow's date, you include current date price data
     hist = yf.Ticker(ticker).history(
-        start=dt.strptime(us.ANALYSIS_START_DATE, "%Y-%m-%d"), 
+        start=us.ANALYSIS_START_DATE, 
         end=dt.now().date() + td(days=1)) \
         .reset_index() # sets index to a Date col 
         
@@ -123,7 +123,7 @@ def get_ticker_prices(ticker):
 def generate_results():
     # generate a df with all dates since ANALYSIS_START_DATE
     date_range = pd.date_range(
-        start=dt.strptime(us.ANALYSIS_START_DATE, "%Y-%m-%d"), 
+        start=us.ANALYSIS_START_DATE, 
         end=dt.now().date(),
         freq="D") \
         .date

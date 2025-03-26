@@ -5,9 +5,7 @@ A tool to evaluate the performance of different strategies (Hold, Divest, Cash) 
 ## Strategies Explained
 
 - **Hold**: RSUs are held long-term. Shares are only sold as needed to cover taxes at vesting.
-
 - **Divest**: RSUs are immediately sold upon vesting, with proceeds reinvested into a broad-market index fund.
-
 - **Cash**: Grants are assumed as immediate cash compensation rather than RSUs. This cash is immediately invested into a broad-market fund.
 
 ## Setup & Configuration
@@ -19,7 +17,6 @@ These settings apply to the analysis engine and data pull behavior:
 
 - `STOCK`: The RSU stock ticker (e.g., `TSLA`)
 - `MARKET`: The comparison market index ticker (e.g., `VTI`)
-- `ANALYSIS_START_DATE`: Analysis window start date (in `YYYY-MM-DD`). Must precede the first vest for accuracy.
 - `WORK_END_DATE`: Last date for vesting eligibility, if applicable. Set as `null` otherwise.
 
 --- 
