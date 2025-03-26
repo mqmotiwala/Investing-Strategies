@@ -20,24 +20,27 @@ class Grant:
         self.vest_rate = self.sellable_qty/self.vest_qty # this is used to estimate the witholding rate for taxes
 
     def _input_validation(self):
-        if not hasattr(self, "vest_plan") and not hasattr(self, "vest_model"):
-            raise ValueError(f"{self.grant_reason} grant does not define vesting logic.")
-
+        # general
         try:
             self.grant_date = dt.strptime(self.grant_date, "%Y-%m-%d").date()
         except ValueError:
             raise ValueError(f"Invalid date format for grant_date: {self.grant_date}. Use yyyy-mm-dd format.")
-        
-        if not isinstance(self.vest_model.get("duration_years"), int) or self.vest_model["duration_years"] < 1:
-            raise ValueError("duration_years must be an integer ≥ 1")
-        
-        cliff_skipped_vests = self.vest_model.get("cliff_skipped_vests", 0)
-        if not isinstance(cliff_skipped_vests, int) or cliff_skipped_vests < 0:
-            raise ValueError("cliff_skipped_vests must be a non-negative integer")
 
-        cliff_vest_qty = self.vest_model.get("cliff_vest_qty", 0)
-        if not (0 <= cliff_vest_qty <= 1):
-            raise ValueError("cliff_vest_qty must be between 0 and 1")
+        if not hasattr(self, "vest_plan") and not hasattr(self, "vest_model"):
+            raise ValueError(f"{self.grant_reason} grant does not define vesting logic.")
+        
+        # vest_model specific input_validation
+        if hasattr(self, "vest_model"): 
+            if not isinstance(self.vest_model.get("duration_years"), int) or self.vest_model["duration_years"] < 1:
+                raise ValueError("duration_years must be an integer ≥ 1")
+            
+            cliff_skipped_vests = self.vest_model.get("cliff_skipped_vests", 0)
+            if not isinstance(cliff_skipped_vests, int) or cliff_skipped_vests < 0:
+                raise ValueError("cliff_skipped_vests must be a non-negative integer")
+
+            cliff_vest_qty = self.vest_model.get("cliff_vest_qty", 0)
+            if not (0 <= cliff_vest_qty <= 1):
+                raise ValueError("cliff_vest_qty must be between 0 and 1")
         
         # if no vest_model, vest_plan has been manually supplied
         # do specific input validation for this case
