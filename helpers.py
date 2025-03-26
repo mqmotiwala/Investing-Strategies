@@ -9,6 +9,7 @@ from grant import Grant
 from config import UserSettings
 
 us = UserSettings()
+DESIRED_TICKER_ATTRIBUTE = "Close"
 
 # define col names
 VEST_COL_NAME = f"{us.STOCK} Vested"
@@ -79,6 +80,12 @@ def calculate_vested_amount(query_date, assumeCashReward=False):
 
                 # sum fractions only if vesting occurrs prior WORK_END_DATE
                 # since vesting cant occur after employment ends
+                if us.WORK_END_DATE is not None:
+                    try:
+                        dt.strptime(us.WORK_END_DATE, "%Y-%m-%d").date()
+                    except ValueError:
+                        raise ValueError(f"WORK_END_DATE must be in YYYY-MM-DD format, or set to null.")
+                
                 if vest_date == query_date and (us.WORK_END_DATE is None or vest_date <= dt.strptime(us.WORK_END_DATE, "%Y-%m-%d").date()):
                     total_vested += fraction * g.vest_rate * (g.grant_value if assumeCashReward else g.grant_qty)
 
@@ -108,8 +115,8 @@ def get_ticker_prices(ticker):
     # various clean-up operations:
     #   drop unnecessary columns
     #   rename ticker price col to ticker 
-    hist = hist[["Date", us.DESIRED_TICKER_ATTRIBUTE]]
-    hist.rename(columns={us.DESIRED_TICKER_ATTRIBUTE: ticker}, inplace=True)
+    hist = hist[["Date", DESIRED_TICKER_ATTRIBUTE]]
+    hist.rename(columns={DESIRED_TICKER_ATTRIBUTE: ticker}, inplace=True)
 
     return hist
 

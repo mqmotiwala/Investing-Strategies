@@ -19,9 +19,8 @@ These settings apply to the analysis engine and data pull behavior:
 
 - `STOCK`: The RSU stock ticker (e.g., `TSLA`)
 - `MARKET`: The comparison market index ticker (e.g., `VTI`)
-- `DESIRED_TICKER_ATTRIBUTE`: Usually `Close`, defines which price attribute is used for historical data
 - `ANALYSIS_START_DATE`: Analysis window start date (in `YYYY-MM-DD`). Must precede the first vest for accuracy.
-- `WORK_END_DATE`: Last date for vesting eligibility, if applicable. Set as `None` otherwise.
+- `WORK_END_DATE`: Last date for vesting eligibility, if applicable. Set as `null` otherwise.
 
 --- 
 
