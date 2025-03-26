@@ -18,7 +18,7 @@ grants:
 grants:
   - grant_reason: "example grant using vest_plan"
     grant_value: 100000
-    grant_date: "01/01/2024"
+    grant_date: "2022-01-01"
     vest_qty: 1000
     sellable_qty: 600
     vest_plan:
@@ -30,7 +30,7 @@ grants:
 
   - grant_reason: "example grant using vest_model with cliff"
     grant_value: 100000
-    grant_date: "01/01/2024"
+    grant_date: "2023-01-01"
     vest_qty: 1000
     sellable_qty: 600
     vest_model:
@@ -40,7 +40,7 @@ grants:
 
   - grant_reason: "example grant using vest_model without cliff"
     grant_value: 100000
-    grant_date: "01/01/2024"
+    grant_date: "2024-01-01"
     vest_qty: 1000
     sellable_qty: 600
     vest_model:
