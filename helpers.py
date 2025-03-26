@@ -79,7 +79,7 @@ def calculate_vested_amount(query_date, assumeCashReward=False):
 
                 # sum fractions only if vesting occurrs prior WORK_END_DATE
                 # since vesting cant occur after employment ends
-                if vest_date == query_date and (us.WORK_END_DATE is None or vest_date <= dt.strptime(us.WORK_END_DATE, "%m/%d/%Y").date()):
+                if vest_date == query_date and (us.WORK_END_DATE is None or vest_date <= dt.strptime(us.WORK_END_DATE, "%Y-%m-%d").date()):
                     total_vested += fraction * g.vest_rate * (g.grant_value if assumeCashReward else g.grant_qty)
 
     return total_vested
@@ -94,7 +94,7 @@ def get_ticker_prices(ticker):
     # yfinance does not include end date in the date range, 
     # so by setting end date to tomorrow's date, you include current date price data
     hist = yf.Ticker(ticker).history(
-        start=dt.strptime(us.ANALYSIS_START_DATE, "%m/%d/%Y"), 
+        start=dt.strptime(us.ANALYSIS_START_DATE, "%Y-%m-%d"), 
         end=dt.now().date() + td(days=1)) \
         .reset_index() # sets index to a Date col 
         
@@ -116,7 +116,7 @@ def get_ticker_prices(ticker):
 def generate_results():
     # generate a df with all dates since ANALYSIS_START_DATE
     date_range = pd.date_range(
-        start=dt.strptime(us.ANALYSIS_START_DATE, "%m/%d/%Y"), 
+        start=dt.strptime(us.ANALYSIS_START_DATE, "%Y-%m-%d"), 
         end=dt.now().date(),
         freq="D") \
         .date
