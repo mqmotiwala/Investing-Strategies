@@ -1,20 +1,22 @@
-STOCK: "TSLA"  # RSUs ticker
-MARKET: "VTI"  # ticker for broad market comparison
-DESIRED_TICKER_ATTRIBUTE: "Close"  # for real-time price updates, set this to Close
+# see ReadMe for documentation!
 
-ANALYSIS_START_DATE: "08/17/2022"  # how far back to look for historical data; must be prior to the first vest for full accuracy 
-WORK_END_DATE: "02/14/2025"        # used to set threshold for when vesting stops, set to None if NA
+# global settings
+STOCK: "TSLA"
+MARKET: "VTI"
+ANALYSIS_START_DATE: "2022-08-27"
+WORK_END_DATE: "2025-02-14"
 
-# month, date of the year on which vesting occurs
+# vest schedule 
 VEST_SCHEDULE:
   - [3, 5]
   - [6, 5]
   - [9, 5]
   - [12, 5]
 
-# see ReadMe for grant configuration documentation
+# grants
 grants:
-  - grant_reason: "Example Grant"
+grants:
+  - grant_reason: "example grant using vest_plan"
     grant_value: 100000
     grant_date: "01/01/2024"
     vest_qty: 1000
@@ -25,3 +27,21 @@ grants:
       y2: [0.0625, 0.0625, 0.0625, 0.0625]
       y3: [0.0625, 0.0625, 0.0625, 0.0625]
       y4: [0.0625, 0, 0, 0]
+
+  - grant_reason: "example grant using vest_model with cliff"
+    grant_value: 100000
+    grant_date: "01/01/2024"
+    vest_qty: 1000
+    sellable_qty: 600
+    vest_model:
+      duration_years: 4
+      cliff_skipped_vests: 4
+      cliff_vest_qty: 0.25
+
+  - grant_reason: "example grant using vest_model without cliff"
+    grant_value: 100000
+    grant_date: "01/01/2024"
+    vest_qty: 1000
+    sellable_qty: 600
+    vest_model:
+      duration_years: 4
