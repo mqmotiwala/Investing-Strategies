@@ -15,7 +15,6 @@ VEST_SCHEDULE:
 
 # grants
 grants:
-grants:
   - grant_reason: "example grant using vest_plan"
     grant_value: 100000
     grant_date: "2022-01-01"
