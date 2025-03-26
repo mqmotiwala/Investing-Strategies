@@ -51,6 +51,9 @@ class Grant:
                 if len(vests) != len(us.VEST_SCHEDULE):
                     raise ValueError(f"Vest plan for {self.grant_reason} grant must have {len(us.VEST_SCHEDULE)} vesting fractions")
                 
+                if year < self.grant_date.year:
+                    raise ValueError(f"Vest plan for {self.grant_reason} grant must not have a year prior to grant_date")
+                
                 total_vesting += sum(vests)
 
             if total_vesting != 1:

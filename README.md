@@ -94,17 +94,18 @@ If more control over vesting logic is desired, you can manually specify `vest_pl
 
 ```yaml
 vest_plan:
-  y0: [a, b, c, d]
-  y1: [e, f, g, h]
+  2022: [a, b, c, d]
+  2023: [e, f, g, h]
   ...
 ```
 
-Each key `y0`, `y1`, ..., represents a year of vesting relative to the grant date year.  
+Each key represents the year of vesting.  
 Each value is a list of percentages for each defined vest date in the year (based on `VEST_SCHEDULE`).
 
 ##### Validation Rules:
 - Percentages must sum to exactly `1.0` across all years.
 - Each year must contain as many entries as `VEST_SCHEDULE`. Use `0` values to pad as needed (e.g., for cliffs).
+- Specified years must be greater than or equal to grant year.
 
 ---
 
@@ -133,9 +134,9 @@ grants:
     vest_qty: 1000
     sellable_qty: 600
     vest_plan:
-      y0: [0, 0, 0, 0]
-      y1: [0.25, 0.0625, 0.0625, 0.0625]
-      y2: [0.0625, 0.0625, 0.0625, 0.0625]
-      y3: [0.0625, 0.0625, 0.0625, 0.0625]
-      y4: [0.0625, 0, 0, 0]
+      2024: [0, 0, 0, 0]
+      2025: [0.25, 0.0625, 0.0625, 0.0625]
+      2026: [0.0625, 0.0625, 0.0625, 0.0625]
+      2027: [0.0625, 0.0625, 0.0625, 0.0625]
+      2028: [0.0625, 0, 0, 0]
 ```
