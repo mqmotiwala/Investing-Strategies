@@ -4,6 +4,9 @@ results.csv
 results.png
 stock_analysis.ipynb
 
+# Ignore all user_settings YAML files
 user_settings.yaml
-user_settings.*.yaml			# Ignore all user_settings YAML files
-!user_settings.template.yaml	# But do not ignore the template file
+user_settings.*.yaml
+
+# But do not ignore the template file
+!user_settings.template.yaml	
