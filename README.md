@@ -12,7 +12,12 @@ A tool to evaluate the performance of different strategies (Hold, Divest, Cash) 
 
 ## Setup & Configuration
 
-All settings are managed in `user_settings.yaml`.  
+All user settings are loaded from `user_settings.yaml`.   
+ 
+Copy the `user_settings.template.yaml` file as `user_settings.yaml` first.  
+Then, personalize the inputs as needed.  
+
+The tool will auto-generate `user_settings.yaml` by copying `user_settings.template.yaml` if needed. 
 
 ### Global Settings
 These settings apply to the analysis engine and data pull behavior:
