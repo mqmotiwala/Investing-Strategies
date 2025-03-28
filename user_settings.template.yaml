@@ -1,0 +1,45 @@
+# see ReadMe for documentation!
+
+# global settings
+STOCK: "TSLA"
+MARKET: "VTI"
+WORK_END_DATE: "2025-02-14"
+
+# vest schedule 
+VEST_SCHEDULE:
+  - [3, 5]
+  - [6, 5]
+  - [9, 5]
+  - [12, 5]
+
+# grants
+grants:
+  - grant_reason: "example grant using vest_plan"
+    grant_value: 100000
+    grant_date: "2022-01-01"
+    vest_qty: 1000
+    sellable_qty: 600
+    vest_plan:
+      2022: [0, 0, 0, 0]
+      2023: [0.25, 0.0625, 0.0625, 0.0625]
+      2024: [0.0625, 0.0625, 0.0625, 0.0625]
+      2025: [0.0625, 0.0625, 0.0625, 0.0625]
+      2026: [0.0625, 0, 0, 0]
+
+  - grant_reason: "example grant using vest_model with cliff"
+    grant_value: 100000
+    grant_date: "2023-01-01"
+    vest_qty: 1000
+    sellable_qty: 600
+    vest_model:
+      duration_years: 4
+      cliff_skipped_vests: 4
+      cliff_vest_qty: 0.25
+
+  - grant_reason: "example grant using vest_model without cliff"
+    grant_value: 100000
+    grant_date: "2024-01-01"
+    vest_qty: 1000
+    sellable_qty: 600
+    vest_model:
+      duration_years: 4
