@@ -33,6 +33,14 @@ STOCK_PORTFOLIO_COL_NAME = f"{us.STOCK} Portfolio Value"
 MARKET_PORTFOLIO_RSU_COL_NAME = f"{us.MARKET} Portfolio Value (RSUs)"
 MARKET_PORTFOLIO_CASH_COL_NAME = f"{us.MARKET} Portfolio Value (Cash)"
 
+def _get_absolute_path(file_name):
+    """
+    generates absolute file path, assuming file_name is in same dir as __file__
+    """
+    
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(script_dir, file_name)
+    
 def is_vest_date(query_date):
     """
     checks if query_date is a vesting date
@@ -168,7 +176,8 @@ def generate_results():
     res = res.round(2)
 
     try:
-        file_path = 'results.csv'
+        file_name = 'results.csv'
+        file_path = _get_absolute_path(file_name)
         res.to_csv(file_path, index=False)
     except PermissionError:
         print(f"Error: Unable to update {file_path}.\n")
@@ -211,7 +220,8 @@ def plot_results(res):
     plt.figtext(0.155, 0, annotation_text, ha='left', fontsize=10)
     
     try:
-        file_path = 'results.png'
+        file_name = 'results.png'
+        file_path = _get_absolute_path(file_name)
         plt.savefig(file_path, bbox_inches='tight') # the kwarg ensures annotation texts are included
     except PermissionError:
         print(f"Error: Unable to update {file_path}.\n")
